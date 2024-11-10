@@ -351,44 +351,54 @@ function addStatusMessage(text, type = 'default') {
 
 async function sendToAI(message) {
     try {
-        // Получаем текущий уровень
         const level = await fetchLevel(currentLevel);
         
-        // Добавляем сообщение пользователя в контекст
         chatContext.addMessage({
             role: 'user',
             content: message
         });
 
-        // Получаем ответ от AI
         const aiResponse = await getAIResponse(message);
         
-        // Проверяем условия победы только если они есть
-        if (level && level.victoryConditions && Array.isArray(level.victoryConditions)) {
-            const victory = level.victoryConditions.some(condition => 
-                aiResponse && typeof aiResponse === 'string' && 
-                aiResponse.toLowerCase().includes(condition.toLowerCase())
-            );
-
-            if (victory) {
-                addStatusMessage(level.victoryMessage || 'Уровень пройден!', 'victory');
-            }
+        // Обрабатываем репутацию
+        const reputationMatch = aiResponse.match(/\*REPUTATION:(-?\d+)\*/);
+        if (reputationMatch) {
+            const reputationChange = parseInt(reputationMatch[1]);
+            updateReputation(reputationChange);
+            // Убираем тег репутации из сообщения
+            const cleanResponse = aiResponse.replace(/\*REPUTATION:-?\d+\*/, '').trim();
+            addAIMessage(cleanResponse);
+        } else {
+            addAIMessage(aiResponse);
         }
 
-        // Добавляем ответ AI в контекст
         chatContext.addMessage({
             role: 'assistant',
             content: aiResponse
         });
 
-        // Отображаем ответ
-        addAIMessage(aiResponse);
+        // Проверяем условия победы
+        if (level?.victoryConditions?.some(condition => 
+            aiResponse.toLowerCase().includes(condition.toLowerCase())
+        )) {
+            addStatusMessage(level.victoryMessage || 'Уровень пройден!', 'victory');
+        }
 
         return aiResponse;
     } catch (error) {
         console.error('Error in sendToAI:', error);
         addStatusMessage('Ошибка: ' + error.message);
         throw error;
+    }
+}
+
+// Добавляем функцию обновления репутации
+function updateReputation(change) {
+    const reputationElement = document.querySelector('.reputation');
+    if (reputationElement) {
+        const currentReputation = parseInt(reputationElement.textContent.split(':')[1]) || 0;
+        const newReputation = currentReputation + change;
+        reputationElement.textContent = `Репутация: ${newReputation}`;
     }
 }
 
