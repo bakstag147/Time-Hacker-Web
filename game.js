@@ -200,7 +200,13 @@ document.head.appendChild(style);
 
 async function fetchLevel(levelNumber) {
     try {
-        const response = await fetch(`${API_URL}/levels/${levelNumber}`);
+        const response = await fetch(`${API_URL}/levels`, {  // Убираем /${levelNumber} из URL
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ level: levelNumber })
+        });
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
