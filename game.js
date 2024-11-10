@@ -255,39 +255,32 @@ async function initGame() {
     try {
         const level = await fetchLevel(currentLevel);
         
+        // Обновляем UI
+        document.getElementById('level-title').textContent = `Уровень ${currentLevel}`;
+        document.getElementById('reputation').textContent = `Репутация: 50`; // Устанавливаем начальное значение 50
+        
+        // Очищаем предыдущие сообщения
+        document.getElementById('messages').innerHTML = '';
+        
         // Очищаем контекст чата
         chatContext.clearContext();
         
-        // Добавляем системное сообщение
+        // Добавляем системный промпт
         chatContext.addMessage({
             role: 'system',
-            content: systemBasePrompt + '\n\n' + level.systemPrompt
+            content: systemBasePrompt
         });
 
-        console.log('Level data type:', typeof level);
-        console.log('Level data keys:', Object.keys(level));
-        
-        // Проверяем структуру данных
-        if (!level || typeof level !== 'object') {
-            throw new Error('Invalid level data structure');
+        // Добавляем начальное сообщение уровня, если оно есть
+        if (level.initialMessage) {
+            addAIMessage(level.initialMessage);
+            chatContext.addMessage({
+                role: 'assistant',
+                content: level.initialMessage
+            });
         }
-
-        // Обновляем заголовок уровня
-        const levelTitle = `Уровень ${level.number}: ${level.title}`;
-        console.log('Setting level title:', levelTitle);
-        
-        // Очищаем предыдущие сообщения
-        const messagesDiv = document.getElementById('messages');
-        messagesDiv.innerHTML = '';
-        
-        // Добавляем сообщения
-        addStatusMessage(levelTitle, 'level-title');
-        addStatusMessage(level.description);
-        addStatusMessage(level.sceneDescription);
-        addAIMessage(level.initialMessage);
-
     } catch (error) {
-        console.error('Error in initGame:', error);
+        console.error('Error initializing game:', error);
         addStatusMessage('Ошибка инициализации: ' + error.message);
     }
 }
