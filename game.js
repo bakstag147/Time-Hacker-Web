@@ -79,6 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('🤖 Sending message to AI...');
             console.log('Level:', level);
             
+            const systemBasePrompt = `ВАЖНЫЕ ПРАВИЛА ВЗАИМОДЕЙСТВИЯ:
+// ... весь текст базового промпта ...
+`;
+            
             const response = await fetch(`${API_URL}/game/message`, {
                 method: 'POST',
                 headers: {
@@ -89,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     messages: [
                         {
                             role: 'system',
-                            content: level.systemPrompt
+                            content: systemBasePrompt + '\n\n' + level.systemPrompt
                         },
                         {
                             role: 'user',
