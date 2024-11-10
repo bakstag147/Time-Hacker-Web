@@ -183,8 +183,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateReputation(value) {
-        reputation = value;
-        document.getElementById('reputation').textContent = reputation;
+        try {
+            const reputationElement = document.getElementById('reputation');
+            if (reputationElement) {
+                reputation = value;
+                reputationElement.textContent = value;
+                console.log('✅ Reputation updated to:', value);
+            } else {
+                console.error('❌ Reputation element not found!');
+            }
+        } catch (error) {
+            console.error('❌ Error updating reputation:', error);
+        }
     }
 
     // Обработчики событий
@@ -201,32 +211,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await sendToAI(message);
             console.log('🎯 Response from AI:', response);
             
-            // Проверяем наличие изменения репутации
-            const reputationMatch = response.match(/\*REPUTATION:(\d+)\*/);
-            console.log('🎲 Reputation match:', reputationMatch);
+            // Сначала добавляем сообщение AI
+            addAIMessage(response.replace(/\*REPUTATION:\d+\*/, '').trim());
             
+            // Потом обрабатываем репутацию
+            const reputationMatch = response.match(/\*REPUTATION:(\d+)\*/);
             if (reputationMatch) {
                 const newReputation = parseInt(reputationMatch[1]);
-                console.log('🎯 New reputation value:', newReputation);
                 updateReputation(newReputation);
             }
-            
-            // Очищаем ответ от метки репутации
-            const cleanResponse = response.replace(/\*REPUTATION:\d+\*/, '');
-            console.log('🧹 Clean response:', cleanResponse);
-            
-            // Разбиваем на действия и сообщения
-            const parts = cleanResponse.split('*');
-            parts.forEach((part, index) => {
-                const trimmedPart = part.trim();
-                if (trimmedPart) {
-                    if (index % 2 === 1) {
-                        addStatusMessage(trimmedPart);
-                    } else {
-                        addAIMessage(trimmedPart);
-                    }
-                }
-            });
             
             // Проверяем условие победы
             const level = await fetchLevel(currentLevel);
