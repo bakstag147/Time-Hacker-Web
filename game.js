@@ -199,11 +199,24 @@ document.head.appendChild(style);
 // Все функции тоже должны быть снаружи
 async function fetchLevel(levelNumber) {
     try {
-        const response = await fetch(`${API_URL}/levels/${levelNumber}`);
+        console.log(`📡 Fetching level ${levelNumber}...`);
+        const response = await fetch(`${API_URL}/levels/${levelNumber}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Origin': 'https://bakstag147.github.io'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('📦 Level data received:', data);
         return data;
     } catch (error) {
-        console.error('Error fetching level:', error);
+        console.error(`❌ Error fetching level ${levelNumber}:`, error);
         throw error;
     }
 }
@@ -211,6 +224,14 @@ async function fetchLevel(levelNumber) {
 async function initGame() {
     console.log('🎮 Starting game initialization...');
     try {
+        // Проверяем наличие необходимых элементов
+        const requiredElements = ['messages', 'message-input', 'send-button', 'reputation'];
+        for (const id of requiredElements) {
+            if (!document.getElementById(id)) {
+                throw new Error(`Required element #${id} not found!`);
+            }
+        }
+
         const level = await fetchLevel(currentLevel);
         console.log('✅ Level loaded successfully:', level);
         
@@ -244,7 +265,12 @@ async function initGame() {
 
     } catch (error) {
         console.error('❌ Error initializing game:', error);
-        addStatusMessage('Ошибка загрузки уровня: ' + error.message);
+        const messagesDiv = document.getElementById('messages');
+        if (messagesDiv) {
+            addStatusMessage('Ошибка загрузки уровня: ' + error.message);
+        } else {
+            console.error('Cannot show error message - messages div not found');
+        }
     }
 }
 
@@ -368,11 +394,27 @@ async function sendToAI(userMessage) {
 // Единственный DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 DOM fully loaded');
-    console.log('🔍 Checking elements:');
-    console.log('messages:', document.getElementById('messages'));
-    console.log('message-input:', document.getElementById('message-input'));
-    console.log('send-button:', document.getElementById('send-button'));
-    console.log('reputation:', document.getElementById('reputation'));
+    
+    // Проверяем наличие всех необходимых элементов
+    const elements = {
+        messages: document.getElementById('messages'),
+        messageInput: document.getElementById('message-input'),
+        sendButton: document.getElementById('send-button'),
+        reputation: document.getElementById('reputation'),
+        restartButton: document.getElementById('restart-button')
+    };
+
+    console.log('🔍 Found elements:', elements);
+
+    // Проверяем, что все элементы существуют
+    const missingElements = Object.entries(elements)
+        .filter(([key, element]) => !element)
+        .map(([key]) => key);
+
+    if (missingElements.length > 0) {
+        console.error('❌ Missing elements:', missingElements);
+        return; // Прерываем инициализацию
+    }
 
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
