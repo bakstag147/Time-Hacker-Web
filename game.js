@@ -207,7 +207,6 @@ async function fetchLevel(levelNumber) {
                 'Origin': 'https://bakstag147.github.io'
             },
             body: JSON.stringify({ level: levelNumber }),
-            credentials: 'include'
         });
         
         if (!response.ok) {
@@ -409,7 +408,6 @@ async function getAIResponse(message) {
                 messages: chatContext.getMessages(),
                 max_tokens: 1024
             }),
-            credentials: 'include'
         });
 
         if (!response.ok) {
