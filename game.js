@@ -391,6 +391,39 @@ async function sendToAI(message) {
         throw error;
     }
 }
+
+async function getAIResponse(message) {
+    try {
+        const response = await fetch(`${API_URL}/chat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                messages: chatContext.getMessages(),
+                max_tokens: 1024
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        // Проверяем наличие контента в ответе
+        if (!data || !data.content) {
+            throw new Error('Invalid AI response format');
+        }
+
+        return data.content;
+
+    } catch (error) {
+        console.error('Error getting AI response:', error);
+        addStatusMessage('Ошибка получения ответа от AI: ' + error.message);
+        throw error;
+    }
+}
 // Единственный DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 DOM fully loaded');
