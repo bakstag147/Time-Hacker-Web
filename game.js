@@ -106,10 +106,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const data = await response.json();
-            console.log('📦 AI response:', data);
+            console.log('📦 Raw AI response:', data);
             
-            // Проверяем, есть ли body в ответе и нужно ли его парсить
-            const content = data.body ? JSON.parse(data.body).content : data.content;
+            // Извлекаем content из вложенного JSON в body
+            let content;
+            if (data.body) {
+                const parsedBody = JSON.parse(data.body);
+                content = parsedBody.content;
+            } else {
+                content = data.content;
+            }
+            
+            console.log('📝 Extracted content:', content);
             return content;
         } catch (error) {
             console.error('❌ Error sending message to AI:', error);
