@@ -33,14 +33,15 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchLevel(levelNumber) {
         console.log('🌐 Fetching level content from API...');
         try {
-            const url = `${API_URL}/levels?level=${levelNumber}`;
+            const url = `${API_URL}/levels`;
             console.log('📡 Request URL:', url);
             
             const response = await fetch(url, {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                body: JSON.stringify({ level: levelNumber })
             });
             
             console.log('📥 Response status:', response.status);
