@@ -74,29 +74,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Отправка сообщения AI
     async function sendToAI(userMessage) {
-        const level = await fetchLevel(currentLevel);
-        
-        const messages = [
-            {
-                role: 'system',
-                content: level.systemPrompt
-            },
-            {
-                role: 'user',
-                content: userMessage
+        try {
+            const level = await fetchLevel(currentLevel);
+            
+            const response = await fetch(`${API_URL}/message`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Origin': 'https://bakstag147.github.io'
+                },
+                body: JSON.stringify({
+                    messages: [
+                        {
+                            role: 'system',
+                            content: level.systemPrompt
+                        },
+                        {
+                            role: 'user',
+                            content: userMessage
+                        }
+                    ]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        ];
 
-        const response = await fetch(`${API_URL}/chat`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ messages })
-        });
-
-        const data = await response.json();
-        return data.message;
+            const data = await response.json();
+            return data.content;
+        } catch (error) {
+            console.error('Error sending message to AI:', error);
+            throw error;
+        }
     }
 
     // UI функции
