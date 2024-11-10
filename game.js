@@ -235,22 +235,17 @@ document.addEventListener('DOMContentLoaded', () => {
             height: 100%;
             width: 100%;
             overflow: hidden;
-            position: fixed;
         }
 
         #game-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            height: 100%;
             max-width: 800px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
             padding: 10px;
             box-sizing: border-box;
-            overflow: hidden;
+            background-color: #1e1e1e;
         }
 
         #level-info {
@@ -265,23 +260,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         #messages {
             flex: 1;
-            overflow-y: scroll;
-            -webkit-overflow-scrolling: touch; /* Для плавного скролла на iOS */
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             padding: 15px;
             background-color: #2d2d2d;
             border-radius: 8px;
-            margin-bottom: 60px;
+            margin-bottom: 10px;
         }
 
         #input-container {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 10px;
-            background-color: #1e1e1e;
+            flex-shrink: 0;
             display: flex;
             gap: 10px;
+            padding: 10px;
+            background-color: #1e1e1e;
             padding-bottom: env(safe-area-inset-bottom, 10px);
         }
 
@@ -289,16 +281,18 @@ document.addEventListener('DOMContentLoaded', () => {
             flex-grow: 1;
             padding: 12px;
             border-radius: 20px;
-            margin: 0 auto;
-            max-width: 780px;
+            background-color: #2d2d2d;
+            color: white;
+            border: none;
         }
 
-        .message {
-            margin: 10px 0;
-            padding: 12px;
-            border-radius: 8px;
-            max-width: 80%;
-            word-wrap: break-word;
+        #send-button {
+            padding: 12px 20px;
+            border-radius: 20px;
+            border: none;
+            background-color: #0084ff;
+            color: white;
+            cursor: pointer;
         }
 
         @media (max-width: 600px) {
@@ -312,6 +306,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             #input-container {
                 padding: 8px;
+            }
+            
+            #message-input {
+                padding: 10px;
+            }
+            
+            #send-button {
+                padding: 10px 16px;
             }
         }
     `;
@@ -415,22 +417,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.getElementById('message-input');
     const messagesContainer = document.getElementById('messages');
 
-    // Предотвращаем автоматический скролл при фокусе
-    messageInput.addEventListener('focus', (e) => {
-        e.preventDefault();
-        // Небольшая задержка, чтобы дать клавиатуре время появиться
-        setTimeout(() => {
-            messagesContainer.scrollTop = messagesContainer.scrollTop;
-        }, 100);
-    });
-
     // Разрешаем скролл в контейнере сообщений
     messagesContainer.addEventListener('touchmove', (e) => {
         e.stopPropagation();
     }, { passive: true });
 
-    // Предотвращаем скролл body
+    // Предотвращаем скролл body только при необходимости
     document.body.addEventListener('touchmove', (e) => {
+        if (e.target.closest('#messages')) return;
         e.preventDefault();
     }, { passive: false });
 }); 
