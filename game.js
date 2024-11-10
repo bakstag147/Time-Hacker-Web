@@ -196,118 +196,53 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Все функции тоже должны быть снаружи
+// После констант и ChatContextManager добавляем все необходимые функции
+
 async function fetchLevel(levelNumber) {
-    try {
-        console.log(`📡 Fetching level ${levelNumber}...`);
-        const response = await fetch(`${API_URL}/levels/${levelNumber}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Origin': 'https://bakstag147.github.io'
-            }
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('📦 Level data received:', data);
-        return data;
-    } catch (error) {
-        console.error(`❌ Error fetching level ${levelNumber}:`, error);
-        throw error;
-    }
+    const response = await fetch(`${API_URL}/levels/${levelNumber}`);
+    const data = await response.json();
+    return data;
 }
 
-async function initGame() {
-    console.log('🎮 Starting game initialization...');
-    try {
-        // Проверяем наличие необходимых элементов
-        const requiredElements = ['messages', 'message-input', 'send-button', 'reputation'];
-        for (const id of requiredElements) {
-            if (!document.getElementById(id)) {
-                throw new Error(`Required element #${id} not found!`);
-            }
-        }
-
-        const level = await fetchLevel(currentLevel);
-        console.log('✅ Level loaded successfully:', level);
-        
-        // Устанавливаем начальную репутацию
-        reputation = 50;
-        const reputationElement = document.getElementById('reputation');
-        if (reputationElement) {
-            reputationElement.textContent = reputation;
-        }
-
-        // Очищаем контекст чата
-        chatContext.clearContext();
-        
-        // Добавляем системный промпт
-        chatContext.addMessage({
-            role: 'system',
-            content: systemBasePrompt + '\n\n' + level.systemPrompt
-        });
-
-        // Обновляем UI
-        const levelNumberSpan = document.querySelector('#level-info > span:first-child');
-        if (levelNumberSpan) {
-            levelNumberSpan.textContent = `Уровень ${level.number}`;
-        }
-        
-        // Добавляем начальные сообщения
-        addStatusMessage(`Уровень ${level.number}: ${level.title}`, 'level-title');
-        addStatusMessage(level.description);
-        addStatusMessage(level.sceneDescription);
-        addAIMessage(level.initialMessage);
-
-    } catch (error) {
-        console.error('❌ Error initializing game:', error);
-        const messagesDiv = document.getElementById('messages');
-        if (messagesDiv) {
-            addStatusMessage('Ошибка загрузки уровня: ' + error.message);
-        } else {
-            console.error('Cannot show error message - messages div not found');
-        }
+function updateReputation(newValue) {
+    reputation = newValue;
+    const reputationElement = document.getElementById('reputation');
+    if (reputationElement) {
+        reputationElement.textContent = newValue;
     }
 }
 
 function addReputationChangeMessage(change) {
     const messagesDiv = document.getElementById('messages');
     const messageDiv = document.createElement('div');
-    messageDiv.className = 'status-message reputation-change';
+    messageDiv.className = 'reputation-change';
     
-    const sign = change > 0 ? '+' : '';
-    messageDiv.innerHTML = `
-        <span class="${change > 0 ? 'positive' : 'negative'}">
-            ${change > 0 ? '⬆️' : '⬇️'} Репутация ${sign}${change}
-        </span>
-    `;
+    if (change > 0) {
+        messageDiv.innerHTML = `<span class="positive">+${change} к репутации</span>`;
+    } else {
+        messageDiv.innerHTML = `<span class="negative">${change} к репутации</span>`;
+    }
     
     messagesDiv.appendChild(messageDiv);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-function updateReputation(newValue) {
+async function initGame() {
     try {
-        const reputationElement = document.getElementById('reputation');
-        if (reputationElement) {
-            const change = newValue - reputation;
-            reputation = newValue;
-            reputationElement.textContent = newValue;
-            
-            if (change !== 0) {
-                addReputationChangeMessage(change);
-            }
-            
-            console.log('✅ Reputation updated to:', newValue, 'change:', change);
-        } else {
-            console.error('❌ Reputation element not found!');
-        }
+        const level = await fetchLevel(currentLevel);
+        addStatusMessage(`Уровень ${level.number}: ${level.title}`, 'level-title');
+        addStatusMessage(level.description);
+        addStatusMessage(level.sceneDescription);
+        addAIMessage(level.initialMessage);
+        
+        chatContext.clearContext();
+        chatContext.addMessage({
+            role: 'system',
+            content: systemBasePrompt + '\n\n' + level.systemPrompt
+        });
     } catch (error) {
-        console.error('❌ Error updating reputation:', error);
+        console.error('Error initializing game:', error);
+        addStatusMessage('Ошибка загрузки уровня: ' + error.message);
     }
 }
 
