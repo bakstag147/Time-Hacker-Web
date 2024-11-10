@@ -105,13 +105,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const responseData = await response.json();
-            // Парсим body, так как он приходит как строка
-            const data = JSON.parse(responseData.body);
-            console.log('📦 AI response data:', data);
+            const data = await response.json();
+            console.log('📦 AI response:', data);
             
-            // Возвращаем только content
-            return data.content;
+            // Проверяем, есть ли body в ответе и нужно ли его парсить
+            const content = data.body ? JSON.parse(data.body).content : data.content;
+            return content;
         } catch (error) {
             console.error('❌ Error sending message to AI:', error);
             throw error;
