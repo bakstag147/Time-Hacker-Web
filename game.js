@@ -251,6 +251,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    document.getElementById('restart-button').addEventListener('click', () => {
+        // Очищаем историю сообщений
+        const messagesDiv = document.getElementById('messages');
+        messagesDiv.innerHTML = '';
+        
+        // Сбрасываем репутацию
+        reputation = 0;
+        document.getElementById('reputation').textContent = reputation;
+        
+        // Перезапускаем текущий уровень
+        initGame();
+    });
+
     // Запуск игры
     initGame();
 }); 

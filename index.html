@@ -6,127 +6,133 @@
     <title>Time Hacker</title>
     <style>
         body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f0f2f5;
+            padding: 20px;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
-        .container {
+        #game-container {
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
 
-        .header {
+        #level-info {
+            font-size: 1.2em;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .messages {
-            padding: 20px;
-            height: calc(100vh - 200px);
+        #messages {
+            flex-grow: 1;
             overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            min-height: 400px;
         }
 
         .message {
-            max-width: 70%;
-            padding: 10px 15px;
-            margin: 5px 0;
-            border-radius: 15px;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 80%;
         }
 
         .user-message {
-            background: #0084ff;
-            color: white;
+            background-color: #0084ff;
             margin-left: auto;
         }
 
         .ai-message {
-            background: #e4e6eb;
-            color: black;
+            background-color: #404040;
+            margin-right: auto;
         }
 
         .status-message {
             text-align: center;
-            color: #65676b;
-            font-size: 0.9em;
+            color: #888;
             margin: 10px 0;
+            font-style: italic;
         }
 
-        .input-container {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 20px;
-            background: white;
-            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
-        }
-
-        .input-wrapper {
-            max-width: 800px;
-            margin: 0 auto;
+        #input-container {
             display: flex;
             gap: 10px;
+            margin-top: 10px;
         }
 
-        input {
-            flex: 1;
+        #message-input {
+            flex-grow: 1;
             padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 20px;
-            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #2d2d2d;
+            color: white;
         }
 
-        button {
+        #send-button {
             padding: 10px 20px;
-            background: #0084ff;
-            color: white;
             border: none;
-            border-radius: 20px;
+            border-radius: 4px;
+            background-color: #0084ff;
+            color: white;
             cursor: pointer;
         }
 
-        button:disabled {
-            background: #ccc;
+        #send-button:hover {
+            background-color: #0073e6;
         }
 
-        .loading {
-            text-align: center;
-            padding: 10px;
+        .action-button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px;
         }
 
-        .reputation {
-            padding: 5px 10px;
-            background: #e4e6eb;
-            border-radius: 10px;
+        .action-button:hover {
+            background-color: #357abd;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .message {
+                max-width: 90%;
+            }
         }
     </style>
-    <script>
-        console.log('📜 HTML started loading');
-    </script>
 </head>
 <body>
-    <div class="header">
-        <div id="level-info">Уровень 1</div>
-        <div class="reputation">Репутация: <span id="reputation">0</span></div>
-    </div>
-
-    <div class="container">
-        <div id="messages" class="messages"></div>
-    </div>
-
-    <div class="input-container">
-        <div class="input-wrapper">
+    <div id="game-container">
+        <div id="level-info">
+            <span>Уровень 1</span>
+            <button id="restart-button" class="action-button">🔄 Начать заново</button>
+            <span>Репутация: <span id="reputation">0</span></span>
+        </div>
+        <div id="messages"></div>
+        <div id="input-container">
             <input type="text" id="message-input" placeholder="Введите сообщение...">
             <button id="send-button">Отправить</button>
         </div>
     </div>
-
     <script src="game.js"></script>
 </body>
 </html>
