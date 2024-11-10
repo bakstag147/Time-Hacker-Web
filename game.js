@@ -20,12 +20,11 @@ async function initGame() {
 // Получение уровня с сервера
 async function fetchLevel(levelNumber) {
     try {
-        const response = await fetch(`${API_URL}/levels`, {
-            method: 'POST',
+        const response = await fetch(`${API_URL}/levels?level=${levelNumber}`, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ level: levelNumber })
+            }
         });
         
         if (!response.ok) {
