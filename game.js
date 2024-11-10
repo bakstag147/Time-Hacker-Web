@@ -374,13 +374,13 @@ async function sendToAI(message) {
         // Очищаем сообщение от тега репутации
         const cleanResponse = aiResponse.replace(/\*REPUTATION:-?\d+\*/, '').trim();
         
-        // Добавляем ТОЛЬКО в контекст чата
+        // Добавляем в контекст чата
         chatContext.addMessage({
             role: 'assistant',
             content: aiResponse
         });
 
-        // Отображаем ТОЛЬКО очищенное сообщение
+        // Отображаем очищенное сообщение
         addAIMessage(cleanResponse);
 
         // Проверяем условия победы
@@ -390,7 +390,7 @@ async function sendToAI(message) {
             addStatusMessage(level.victoryMessage || 'Уровень пройден!', 'victory');
         }
 
-        return aiResponse;
+        return cleanResponse;
     } catch (error) {
         console.error('Error in sendToAI:', error);
         addStatusMessage('Ошибка: ' + error.message);
@@ -472,8 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
             addUserMessage(message);
             
             try {
-                const response = await sendToAI(message);
-                addAIMessage(response);
+                await sendToAI(message); // Просто ждем завершения, не добавляем сообщение
             } catch (error) {
                 addStatusMessage('Произошла ошибка при отправке сообщения');
             }
