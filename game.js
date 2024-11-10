@@ -400,7 +400,7 @@ async function getAIResponse(message) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                messages: chatContext.getMessages()  // Отправляем весь контекст
+                messages: chatContext.getMessages()
             })
         });
 
@@ -408,9 +408,10 @@ async function getAIResponse(message) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data = await response.json();
-        console.log('AI Response:', data); // Оставим лог для отладки
-        return data.content || data.message || data;
+        const responseData = await response.json();
+        const data = JSON.parse(responseData.body);
+        
+        return data.content;
 
     } catch (error) {
         console.error('Error getting AI response:', error);
