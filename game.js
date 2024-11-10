@@ -255,12 +255,21 @@ async function initGame() {
     try {
         const level = await fetchLevel(currentLevel);
         
+        // Получаем элементы с проверкой
+        const levelTitle = document.getElementById('level-title');
+        const reputationElement = document.getElementById('reputation');
+        const messagesContainer = document.getElementById('messages');
+
+        if (!levelTitle || !reputationElement || !messagesContainer) {
+            throw new Error('Не найдены необходимые элементы интерфейса');
+        }
+
         // Обновляем UI
-        document.getElementById('level-title').textContent = `Уровень ${currentLevel}`;
-        document.getElementById('reputation').textContent = `Репутация: 50`; // Устанавливаем начальное значение 50
+        levelTitle.textContent = `Уровень ${currentLevel}`;
+        reputationElement.textContent = `Репутация: 50`;
         
         // Очищаем предыдущие сообщения
-        document.getElementById('messages').innerHTML = '';
+        messagesContainer.innerHTML = '';
         
         // Очищаем контекст чата
         chatContext.clearContext();
