@@ -255,18 +255,18 @@ async function initGame() {
     try {
         const level = await fetchLevel(currentLevel);
         
-        // Получаем элементы с проверкой
-        const levelTitle = document.getElementById('level-title');
-        const reputationElement = document.getElementById('reputation');
+        // Обновляем UI - уровень находится в первом span внутри level-info
+        const levelInfo = document.querySelector('#level-info span:first-child');
+        const reputationSpan = document.querySelector('#reputation');
         const messagesContainer = document.getElementById('messages');
 
-        if (!levelTitle || !reputationElement || !messagesContainer) {
+        if (!levelInfo || !reputationSpan || !messagesContainer) {
             throw new Error('Не найдены необходимые элементы интерфейса');
         }
 
         // Обновляем UI
-        levelTitle.textContent = `Уровень ${currentLevel}`;
-        reputationElement.textContent = `Репутация: 50`;
+        levelInfo.textContent = `Уровень ${currentLevel}`;
+        reputationSpan.textContent = '50';  // Устанавливаем только число
         
         // Очищаем предыдущие сообщения
         messagesContainer.innerHTML = '';
