@@ -247,21 +247,39 @@ function addReputationChangeMessage(change) {
 async function initGame() {
     try {
         const level = await fetchLevel(currentLevel);
+        console.log('Received level data:', level);
+        
+        // Проверяем, что получили правильные данные
+        if (!level || !level.number || !level.title) {
+            throw new Error('Invalid level data received');
+        }
+
+        // Очищаем предыдущие сообщения
+        const messagesDiv = document.getElementById('messages');
+        if (messagesDiv) {
+            messagesDiv.innerHTML = '';
+        }
+
+        // Добавляем сообщения уровня
         addStatusMessage(`Уровень ${level.number}: ${level.title}`, 'level-title');
         addStatusMessage(level.description);
         addStatusMessage(level.sceneDescription);
         addAIMessage(level.initialMessage);
         
+        // Инициализируем контекст чата
         chatContext.clearContext();
         chatContext.addMessage({
             role: 'system',
             content: systemBasePrompt + '\n\n' + level.systemPrompt
         });
+
     } catch (error) {
         console.error('Error initializing game:', error);
         addStatusMessage('Ошибка загрузки уровня: ' + error.message);
     }
 }
+
+
 
 function addUserMessage(text) {
     const messagesDiv = document.getElementById('messages');
@@ -282,15 +300,15 @@ function addAIMessage(text) {
 }
 
 function addStatusMessage(text, type = 'default') {
+    console.log('Adding status message:', text, type);
     const messagesDiv = document.getElementById('messages');
-    const messageDiv = document.createElement('div');
-    
-    if (type === 'level-title') {
-        messageDiv.className = 'status-message level-title';
-    } else {
-        messageDiv.className = 'status-message';
+    if (!messagesDiv) {
+        console.error('Messages container not found!');
+        return;
     }
-    
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message status ${type}`;
     messageDiv.textContent = text;
     messagesDiv.appendChild(messageDiv);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
