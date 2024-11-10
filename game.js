@@ -400,8 +400,7 @@ async function getAIResponse(message) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                messages: chatContext.getMessages(),
-                max_tokens: 1024
+                messages: chatContext.getMessages()  // Отправляем весь контекст
             })
         });
 
@@ -410,7 +409,8 @@ async function getAIResponse(message) {
         }
 
         const data = await response.json();
-        return data.content;
+        console.log('AI Response:', data); // Оставим лог для отладки
+        return data.content || data.message || data;
 
     } catch (error) {
         console.error('Error getting AI response:', error);
