@@ -1,5 +1,5 @@
 // Константы (должны быть снаружи)
-const API_URL = 'https://p4xm04i4k2.execute-api.eu-north-1.amazonaws.com/prod';
+const API_URL = 'https://gg40e4wjm2.execute-api.eu-north-1.amazonaws.com/prod';
 let currentLevel = 1;
 let reputation = 50;
 
