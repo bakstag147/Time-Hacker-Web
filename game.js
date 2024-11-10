@@ -199,9 +199,26 @@ document.head.appendChild(style);
 // После констант и ChatContextManager добавляем все необходимые функции
 
 async function fetchLevel(levelNumber) {
-    const response = await fetch(`${API_URL}/levels/${levelNumber}`);
-    const data = await response.json();
-    return data;
+    try {
+        const response = await fetch(`${API_URL}/levels/${levelNumber}`, {
+            method: 'POST',  // Меняем на POST
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ level: levelNumber })  // Добавляем level в тело запроса
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Level data received:', data);
+        return data;
+    } catch (error) {
+        console.error('Error fetching level:', error);
+        throw error;
+    }
 }
 
 function updateReputation(newValue) {
@@ -325,7 +342,6 @@ async function sendToAI(userMessage) {
         throw error;
     }
 }
-
 // Единственный DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 DOM fully loaded');
