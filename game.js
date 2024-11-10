@@ -26,8 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Invalid level data structure');
             }
             
-            // Обновляем UI
-            document.getElementById('level-info').textContent = `Уровень ${level.number}`;
+            // Обновляем ТОЛЬКО номер уровня, не трогая остальные элементы
+            const levelNumberSpan = document.querySelector('#level-info > span:first-child');
+            if (levelNumberSpan) {
+                levelNumberSpan.textContent = `Уровень ${level.number}`;
+            }
             
             // Добавляем сообщения
             addStatusMessage(`Уровень ${level.number}: ${level.title}`);
