@@ -409,4 +409,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Запуск игры
     initGame();
+
+    // Добавляем в начало файла
+    window.addEventListener('resize', () => {
+        // Небольшая задержка для завершения анимации клавиатуры
+        setTimeout(() => {
+            window.scrollTo(0, 0);
+        }, 100);
+    });
 }); 
