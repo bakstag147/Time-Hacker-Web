@@ -354,11 +354,6 @@ async function sendToAI(message) {
         // Получаем текущий уровень
         const level = await fetchLevel(currentLevel);
         
-        // Проверяем наличие победных условий
-        if (!level || !level.victoryConditions) {
-            throw new Error('Invalid level data: missing victory conditions');
-        }
-
         // Добавляем сообщение пользователя в контекст
         chatContext.addMessage({
             role: 'user',
@@ -368,10 +363,17 @@ async function sendToAI(message) {
         // Получаем ответ от AI
         const aiResponse = await getAIResponse(message);
         
-        // Проверяем условия победы
-        const victory = level.victoryConditions.some(condition => 
-            aiResponse.toLowerCase().includes(condition.toLowerCase())
-        );
+        // Проверяем условия победы только если они есть
+        if (level && level.victoryConditions && Array.isArray(level.victoryConditions)) {
+            const victory = level.victoryConditions.some(condition => 
+                aiResponse && typeof aiResponse === 'string' && 
+                aiResponse.toLowerCase().includes(condition.toLowerCase())
+            );
+
+            if (victory) {
+                addStatusMessage(level.victoryMessage || 'Уровень пройден!', 'victory');
+            }
+        }
 
         // Добавляем ответ AI в контекст
         chatContext.addMessage({
@@ -381,12 +383,6 @@ async function sendToAI(message) {
 
         // Отображаем ответ
         addAIMessage(aiResponse);
-
-        // Если достигнуто условие победы
-        if (victory) {
-            addStatusMessage(level.victoryMessage, 'victory');
-            // Дополнительная логика победы...
-        }
 
         return aiResponse;
     } catch (error) {
