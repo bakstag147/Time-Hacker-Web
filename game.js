@@ -212,17 +212,15 @@ async function fetchLevel(levelNumber) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        const rawData = await response.text(); // Сначала получаем текст
-        console.log('Raw response:', rawData);
+        const responseData = await response.json();
+        console.log('Response data:', responseData);
         
-        try {
-            const data = JSON.parse(rawData); // Затем парсим его
-            console.log('Parsed level data:', data);
-            return data;
-        } catch (parseError) {
-            console.error('Error parsing JSON:', parseError);
-            throw new Error('Invalid JSON response');
-        }
+        // Парсим body, так как он приходит как строка
+        const levelData = JSON.parse(responseData.body);
+        console.log('Level data:', levelData);
+        
+        return levelData; // Возвращаем распарсенные данные уровня
+        
     } catch (error) {
         console.error('Error fetching level:', error);
         throw error;
