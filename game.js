@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             // Добавляем сообщения
-            addStatusMessage(`Уровень ${level.number}: ${level.title}`);
+            addStatusMessage(`Уровень ${level.number}: ${level.title}`, 'level-title');
             addStatusMessage(level.description);
             addStatusMessage(level.sceneDescription);
             addAIMessage(level.initialMessage);
@@ -194,8 +194,19 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessage(content, false);
     }
 
-    function addStatusMessage(content) {
-        addMessage(content, false, 'status');
+    function addStatusMessage(content, type = 'default') {
+        const messagesDiv = document.getElementById('messages');
+        const messageDiv = document.createElement('div');
+        
+        if (type === 'level-title') {
+            messageDiv.className = 'status-message level-title';
+        } else {
+            messageDiv.className = 'status-message';
+        }
+        
+        messageDiv.textContent = content;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
     function addReputationChangeMessage(change) {
@@ -215,18 +226,25 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
-    // Добавляем CSS
+    // Добавляем CSS стили
     const style = document.createElement('style');
     style.textContent = `
         .reputation-change {
             text-align: center;
             margin: 8px 0;
+            font-style: normal;
         }
         .reputation-change .positive {
             color: #4CAF50;
         }
         .reputation-change .negative {
             color: #f44336;
+        }
+        .level-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin: 15px 0;
+            font-style: normal;
         }
     `;
     document.head.appendChild(style);
