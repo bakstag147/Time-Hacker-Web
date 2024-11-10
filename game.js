@@ -29,6 +29,8 @@ async function fetchLevel(levelNumber) {
                 'Content-Type': 'application/json',
                 'Origin': 'https://bakstag147.github.io'
             },
+            mode: 'cors',
+            credentials: 'include',
             body: JSON.stringify({ level: levelNumber })
         });
         
@@ -72,6 +74,8 @@ async function sendToAI(userMessage) {
                 'Content-Type': 'application/json',
                 'Origin': 'https://bakstag147.github.io'
             },
+            mode: 'cors',
+            credentials: 'include',
             body: JSON.stringify({ messages })
         });
 
