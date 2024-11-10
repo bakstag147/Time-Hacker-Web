@@ -77,11 +77,29 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const level = await fetchLevel(currentLevel);
             console.log('🤖 Sending message to AI...');
-            console.log('Level:', level);
             
             const systemBasePrompt = `ВАЖНЫЕ ПРАВИЛА ВЗАИМОДЕЙСТВИЯ:
-// ... весь текст базового промпта ...
-`;
+            // ... весь текст базового промпта ...
+            `;
+            
+            // Логируем полный промпт
+            const fullPrompt = systemBasePrompt + '\n\n' + level.systemPrompt;
+            console.log('📝 Full system prompt:', fullPrompt);
+            
+            const requestBody = {
+                messages: [
+                    {
+                        role: 'system',
+                        content: fullPrompt
+                    },
+                    {
+                        role: 'user',
+                        content: userMessage
+                    }
+                ]
+            };
+            
+            console.log('📤 Request body:', JSON.stringify(requestBody, null, 2));
             
             const response = await fetch(`${API_URL}/game/message`, {
                 method: 'POST',
@@ -89,39 +107,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'Origin': 'https://bakstag147.github.io'
                 },
-                body: JSON.stringify({
-                    messages: [
-                        {
-                            role: 'system',
-                            content: systemBasePrompt + '\n\n' + level.systemPrompt
-                        },
-                        {
-                            role: 'user',
-                            content: userMessage
-                        }
-                    ]
-                })
+                body: JSON.stringify(requestBody)
             });
 
-            console.log('📥 Response status:', response.status);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
             const data = await response.json();
-            console.log('📦 Raw AI response:', data);
+            console.log('📦 Raw response:', data);
             
-            // Извлекаем content из вложенного JSON в body
             let content;
             if (data.body) {
                 const parsedBody = JSON.parse(data.body);
+                console.log('📦 Parsed body:', parsedBody);
                 content = parsedBody.content;
             } else {
                 content = data.content;
             }
             
-            console.log('📝 Extracted content:', content);
+            console.log('📝 Final content:', content);
             return content;
         } catch (error) {
             console.error('❌ Error sending message to AI:', error);
