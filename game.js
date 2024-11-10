@@ -401,13 +401,12 @@ async function getAIResponse(message) {
         const response = await fetch(`${API_URL}/chat`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Origin': 'https://bakstag147.github.io'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 messages: chatContext.getMessages(),
                 max_tokens: 1024
-            }),
+            })
         });
 
         if (!response.ok) {
@@ -415,16 +414,10 @@ async function getAIResponse(message) {
         }
 
         const data = await response.json();
-        
-        if (!data || !data.content) {
-            throw new Error('Invalid AI response format');
-        }
-
         return data.content;
 
     } catch (error) {
         console.error('Error getting AI response:', error);
-        addStatusMessage('Ошибка получения ответа от AI: ' + error.message);
         throw error;
     }
 }
