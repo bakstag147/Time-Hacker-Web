@@ -76,6 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
     async function sendToAI(userMessage) {
         try {
             const level = await fetchLevel(currentLevel);
+            console.log('🤖 Sending message to AI...');
+            console.log('Level:', level);
             
             const response = await fetch(`${API_URL}/message`, {
                 method: 'POST',
@@ -97,14 +99,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
 
+            console.log('📥 Response status:', response.status);
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
+            const responseData = await response.json();
+            // Проверяем, есть ли body в ответе
+            const data = responseData.body ? JSON.parse(responseData.body) : responseData;
+            console.log('📦 AI response:', data);
             return data.content;
         } catch (error) {
-            console.error('Error sending message to AI:', error);
+            console.error('❌ Error sending message to AI:', error);
             throw error;
         }
     }
