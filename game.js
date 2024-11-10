@@ -398,7 +398,7 @@ async function sendToAI(message) {
 
 async function getAIResponse(message) {
     try {
-        const response = await fetch(`${API_URL}/chat`, {
+        const response = await fetch(`${API_URL}/game/message`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
