@@ -5,37 +5,46 @@ let reputation = 0;
 
 // Инициализация игры
 async function initGame() {
+    console.log('🎮 Starting game initialization...');
     try {
+        console.log('📱 Starting to load level:', currentLevel);
         const level = await fetchLevel(currentLevel);
+        console.log('✅ Level loaded successfully:', level);
         addStatusMessage(`Уровень ${level.number}: ${level.title}`);
         addStatusMessage(level.description);
         addStatusMessage(level.sceneDescription);
         addAIMessage(level.initialMessage);
     } catch (error) {
-        console.error('Error initializing game:', error);
-        addStatusMessage('Ошибка загрузки уровня');
+        console.error('❌ Error initializing game:', error);
+        addStatusMessage('Ошибка загрузки уровня: ' + error.message);
     }
 }
 
 // Получение уровня с сервера
 async function fetchLevel(levelNumber) {
+    console.log('🌐 Fetching level content from API...');
     try {
-        const response = await fetch(`${API_URL}/levels?level=${levelNumber}`, {
+        const url = `${API_URL}/levels?level=${levelNumber}`;
+        console.log('📡 Request URL:', url);
+        
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             }
         });
         
+        console.log('📥 Response status:', response.status);
+        
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('Level data:', data); // Для отладки
+        console.log('📦 Level data:', data);
         return data;
     } catch (error) {
-        console.error('Error fetching level:', error);
+        console.error('❌ Error fetching level:', error);
         throw error;
     }
 }
@@ -119,7 +128,7 @@ document.getElementById('send-button').addEventListener('click', async () => {
             updateReputation(parseInt(reputationMatch[1]));
         }
         
-        // Очищаем ответ от метки репутации
+        // Очищаем от��ет от метки репутации
         const cleanResponse = response.replace(/\*REPUTATION:\d+\*/, '');
         
         // Разбиваем на действия и сообщения
