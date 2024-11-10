@@ -364,18 +364,24 @@ async function sendToAI(message) {
         const reputationMatch = aiResponse.match(/\*REPUTATION:(-?\d+)\*/);
         if (reputationMatch) {
             const reputationChange = parseInt(reputationMatch[1]);
-            updateReputation(reputationChange);
-            // Убираем тег репутации из сообщения
-            const cleanResponse = aiResponse.replace(/\*REPUTATION:-?\d+\*/, '').trim();
-            addAIMessage(cleanResponse);
-        } else {
-            addAIMessage(aiResponse);
+            const reputationElement = document.querySelector('#reputation');
+            if (reputationElement) {
+                const currentReputation = parseInt(reputationElement.textContent.split(':')[1]) || 0;
+                reputationElement.textContent = `Репутация: ${currentReputation + reputationChange}`;
+            }
         }
 
+        // Очищаем сообщение от тега репутации
+        const cleanResponse = aiResponse.replace(/\*REPUTATION:-?\d+\*/, '').trim();
+        
+        // Добавляем ТОЛЬКО в контекст чата
         chatContext.addMessage({
             role: 'assistant',
             content: aiResponse
         });
+
+        // Отображаем ТОЛЬКО очищенное сообщение
+        addAIMessage(cleanResponse);
 
         // Проверяем условия победы
         if (level?.victoryConditions?.some(condition => 
