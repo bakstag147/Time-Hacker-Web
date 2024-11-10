@@ -229,22 +229,100 @@ document.addEventListener('DOMContentLoaded', () => {
     // Добавляем CSS стили
     const style = document.createElement('style');
     style.textContent = `
-        .reputation-change {
-            text-align: center;
-            margin: 8px 0;
-            font-style: normal;
+        #game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        .reputation-change .positive {
-            color: #4CAF50;
-        }
-        .reputation-change .negative {
-            color: #f44336;
-        }
-        .level-title {
-            font-weight: bold;
+
+        #level-info {
             font-size: 1.2em;
-            margin: 15px 0;
-            font-style: normal;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        #messages {
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #2d2d2d;
+            border-radius: 8px;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 8px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        #input-container {
+            position: sticky;
+            bottom: 0;
+            background-color: #1e1e1e;
+            padding: 10px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        #message-input {
+            flex-grow: 1;
+            padding: 12px;
+            border-radius: 20px;
+        }
+
+        /* Медиа-запросы для мобильных устройств */
+        @media (max-width: 600px) {
+            #game-container {
+                padding: 10px;
+            }
+
+            #level-info {
+                font-size: 1em;
+            }
+
+            .message {
+                max-width: 90%;
+                padding: 10px;
+            }
+
+            #messages {
+                height: calc(100vh - 160px);
+                padding: 10px;
+            }
+
+            #input-container {
+                padding: 10px;
+            }
+
+            #message-input {
+                padding: 10px;
+            }
+
+            .action-button {
+                padding: 6px 12px;
+                font-size: 0.9em;
+            }
+        }
+
+        /* Медиа-запросы для очень маленьких экранов */
+        @media (max-width: 350px) {
+            #level-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .message {
+                max-width: 95%;
+            }
         }
     `;
     document.head.appendChild(style);
