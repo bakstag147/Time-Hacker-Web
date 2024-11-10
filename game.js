@@ -61,9 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
-            const data = await response.json();
-            console.log('📦 Level data:', data);
-            return data;
+            const responseData = await response.json();
+            // Парсим body, так как он приходит как строка
+            const levelData = JSON.parse(responseData.body);
+            console.log('📦 Level data:', levelData);
+            return levelData;
         } catch (error) {
             console.error('❌ Error fetching level:', error);
             throw error;
