@@ -19,6 +19,17 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('📱 Starting to load level:', currentLevel);
             const level = await fetchLevel(currentLevel);
             console.log('✅ Level loaded successfully:', level);
+            
+            // Проверяем структуру данных
+            if (!level.number || !level.title) {
+                console.error('❌ Invalid level data:', level);
+                throw new Error('Invalid level data structure');
+            }
+            
+            // Обновляем UI
+            document.getElementById('level-info').textContent = `Уровень ${level.number}`;
+            
+            // Добавляем сообщения
             addStatusMessage(`Уровень ${level.number}: ${level.title}`);
             addStatusMessage(level.description);
             addStatusMessage(level.sceneDescription);
