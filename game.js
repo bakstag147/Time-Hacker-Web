@@ -203,9 +203,11 @@ async function fetchLevel(levelNumber) {
         const response = await fetch(`${API_URL}/levels`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Origin': 'https://bakstag147.github.io'
             },
-            body: JSON.stringify({ level: levelNumber })
+            body: JSON.stringify({ level: levelNumber }),
+            credentials: 'include'
         });
         
         if (!response.ok) {
@@ -400,12 +402,14 @@ async function getAIResponse(message) {
         const response = await fetch(`${API_URL}/chat`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Origin': 'https://bakstag147.github.io'
             },
             body: JSON.stringify({
                 messages: chatContext.getMessages(),
                 max_tokens: 1024
-            })
+            }),
+            credentials: 'include'
         });
 
         if (!response.ok) {
@@ -414,7 +418,6 @@ async function getAIResponse(message) {
 
         const data = await response.json();
         
-        // Проверяем наличие контента в ответе
         if (!data || !data.content) {
             throw new Error('Invalid AI response format');
         }
