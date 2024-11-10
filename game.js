@@ -361,18 +361,25 @@ async function sendToAI(message) {
         const aiResponse = await getAIResponse(message);
         
         // Обрабатываем репутацию
-        const reputationMatch = aiResponse.match(/\*REPUTATION:(-?\d+)\*/);
+        const reputationMatch = aiResponse.match(/\*REPUTATION:(\d+)\*/);  // Убрали знак минуса из регулярки
         if (reputationMatch) {
-            const reputationChange = parseInt(reputationMatch[1]);
+            const newReputation = parseInt(reputationMatch[1]);  // Это новое значение, не изменение
             const reputationElement = document.querySelector('#reputation');
             if (reputationElement) {
-                const currentReputation = parseInt(reputationElement.textContent.split(':')[1]) || 0;
-                reputationElement.textContent = `Репутация: ${currentReputation + reputationChange}`;
+                const oldReputation = parseInt(reputationElement.textContent.split(':')[1]) || 0;
+                // Обновляем значение репутации (не прибавляем)
+                reputationElement.textContent = `Репутация: ${newReputation}`;
+                
+                // Показываем изменение
+                const change = newReputation - oldReputation;
+                if (change !== 0) {
+                    addReputationChangeMessage(change);
+                }
             }
         }
 
         // Очищаем сообщение от тега репутации
-        const cleanResponse = aiResponse.replace(/\*REPUTATION:-?\d+\*/, '').trim();
+        const cleanResponse = aiResponse.replace(/\*REPUTATION:\d+\*/, '').trim();
         
         // Добавляем в контекст чата
         chatContext.addMessage({
