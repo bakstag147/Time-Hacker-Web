@@ -229,11 +229,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Добавляем CSS стили
     const style = document.createElement('style');
     style.textContent = `
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             height: 100%;
-            position: fixed;
             width: 100%;
             overflow: hidden;
         }
@@ -242,17 +241,18 @@ document.addEventListener('DOMContentLoaded', () => {
             max-width: 800px;
             margin: 0 auto;
             width: 100%;
-            height: 100%;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             padding: 10px;
             box-sizing: border-box;
+            /* Учитываем нижнюю панель iOS */
+            padding-bottom: env(safe-area-inset-bottom, 10px);
         }
 
         #level-info {
             flex-shrink: 0;
-            font-size: 1.2em;
-            margin-bottom: 10px;
+            padding: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -267,6 +267,29 @@ document.addEventListener('DOMContentLoaded', () => {
             padding: 15px;
             background-color: #2d2d2d;
             border-radius: 8px;
+            /* Оставляем место для поля ввода */
+            margin-bottom: 60px;
+        }
+
+        #input-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background-color: #1e1e1e;
+            display: flex;
+            gap: 10px;
+            /* Учитываем нижнюю панель iOS */
+            padding-bottom: env(safe-area-inset-bottom, 10px);
+        }
+
+        #message-input {
+            flex-grow: 1;
+            padding: 12px;
+            border-radius: 20px;
+            margin: 0 auto;
+            max-width: 780px;
         }
 
         .message {
@@ -277,48 +300,19 @@ document.addEventListener('DOMContentLoaded', () => {
             word-wrap: break-word;
         }
 
-        #input-container {
-            flex-shrink: 0;
-            display: flex;
-            gap: 10px;
-            padding: 10px 0;
-            background-color: #1e1e1e;
-        }
-
-        #message-input {
-            flex-grow: 1;
-            padding: 12px;
-            border-radius: 20px;
-        }
-
-        /* Медиа-запросы для мобильных устройств */
         @media (max-width: 600px) {
-            body {
-                position: fixed;
-            }
-
             #game-container {
                 padding: 8px;
             }
 
             #messages {
                 padding: 10px;
+                /* Увеличиваем отступ снизу на мобильных */
+                margin-bottom: 70px;
             }
 
             #input-container {
-                padding: 8px 0;
-            }
-        }
-
-        /* Медиа-запросы для очень маленьких экранов */
-        @media (max-width: 350px) {
-            #level-info {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .message {
-                max-width: 95%;
+                padding: 8px;
             }
         }
     `;
