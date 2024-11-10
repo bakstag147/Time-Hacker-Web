@@ -229,15 +229,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Добавляем CSS стили
     const style = document.createElement('style');
     style.textContent = `
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            position: fixed;
+            width: 100%;
+            overflow: hidden;
+        }
+
         #game-container {
             max-width: 800px;
             margin: 0 auto;
             width: 100%;
-            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
             box-sizing: border-box;
         }
 
         #level-info {
+            flex-shrink: 0;
             font-size: 1.2em;
             margin-bottom: 10px;
             display: flex;
@@ -248,9 +261,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         #messages {
-            height: calc(100vh - 200px);
+            flex: 1;
             overflow-y: auto;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             padding: 15px;
             background-color: #2d2d2d;
             border-radius: 8px;
@@ -265,12 +278,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         #input-container {
-            position: sticky;
-            bottom: 0;
-            background-color: #1e1e1e;
-            padding: 10px 0;
+            flex-shrink: 0;
             display: flex;
             gap: 10px;
+            padding: 10px 0;
+            background-color: #1e1e1e;
         }
 
         #message-input {
@@ -281,35 +293,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         /* Медиа-запросы для мобильных устройств */
         @media (max-width: 600px) {
+            body {
+                position: fixed;
+            }
+
             #game-container {
-                padding: 10px;
-            }
-
-            #level-info {
-                font-size: 1em;
-            }
-
-            .message {
-                max-width: 90%;
-                padding: 10px;
+                padding: 8px;
             }
 
             #messages {
-                height: calc(100vh - 160px);
                 padding: 10px;
             }
 
             #input-container {
-                padding: 10px;
-            }
-
-            #message-input {
-                padding: 10px;
-            }
-
-            .action-button {
-                padding: 6px 12px;
-                font-size: 0.9em;
+                padding: 8px 0;
             }
         }
 
