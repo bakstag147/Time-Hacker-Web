@@ -170,15 +170,21 @@ document.addEventListener('DOMContentLoaded', () => {
         
         try {
             const response = await sendToAI(message);
+            console.log('🎯 Response from AI:', response);
             
             // Проверяем наличие изменения репутации
             const reputationMatch = response.match(/\*REPUTATION:(\d+)\*/);
+            console.log('🎲 Reputation match:', reputationMatch);
+            
             if (reputationMatch) {
-                updateReputation(parseInt(reputationMatch[1]));
+                const newReputation = parseInt(reputationMatch[1]);
+                console.log('🎯 New reputation value:', newReputation);
+                updateReputation(newReputation);
             }
             
-            // Очищаем отет от метки репутации
+            // Очищаем ответ от метки репутации
             const cleanResponse = response.replace(/\*REPUTATION:\d+\*/, '');
+            console.log('🧹 Clean response:', cleanResponse);
             
             // Разбиваем на действия и сообщения
             const parts = cleanResponse.split('*');
