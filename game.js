@@ -361,13 +361,13 @@ async function sendToAI(message) {
         const aiResponse = await getAIResponse(message);
         
         // Обрабатываем репутацию
-        const reputationMatch = aiResponse.match(/\*REPUTATION:(\d+)\*/);  // Убрали знак минуса из регулярки
+        const reputationMatch = aiResponse.match(/\*REPUTATION:(\d+)\*/);
         if (reputationMatch) {
-            const newReputation = parseInt(reputationMatch[1]);  // Это новое значение, не изменение
+            const newReputation = parseInt(reputationMatch[1]);
             const reputationElement = document.querySelector('#reputation');
             if (reputationElement) {
-                const oldReputation = parseInt(reputationElement.textContent.split(':')[1]) || 0;
-                // Обновляем значение репутации (не прибавляем)
+                const oldReputation = parseInt(reputationElement.textContent.match(/\d+/) || 0);
+                // Обновляем значение репутации (просто текст)
                 reputationElement.textContent = `Репутация: ${newReputation}`;
                 
                 // Показываем изменение
