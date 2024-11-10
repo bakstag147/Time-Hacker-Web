@@ -235,19 +235,22 @@ document.addEventListener('DOMContentLoaded', () => {
             height: 100%;
             width: 100%;
             overflow: hidden;
+            position: fixed;
         }
 
         #game-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             max-width: 800px;
             margin: 0 auto;
-            width: 100%;
-            height: 100vh;
             display: flex;
             flex-direction: column;
             padding: 10px;
             box-sizing: border-box;
-            /* Учитываем нижнюю панель iOS */
-            padding-bottom: env(safe-area-inset-bottom, 10px);
+            overflow: hidden;
         }
 
         #level-info {
@@ -262,17 +265,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         #messages {
             flex: 1;
-            overflow-y: auto;
-            margin-bottom: 10px;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch; /* Для плавного скролла на iOS */
             padding: 15px;
             background-color: #2d2d2d;
             border-radius: 8px;
-            /* Оставляем место для поля ввода */
             margin-bottom: 60px;
         }
 
         #input-container {
-            position: fixed;
+            position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
@@ -280,7 +282,6 @@ document.addEventListener('DOMContentLoaded', () => {
             background-color: #1e1e1e;
             display: flex;
             gap: 10px;
-            /* Учитываем нижнюю панель iOS */
             padding-bottom: env(safe-area-inset-bottom, 10px);
         }
 
@@ -307,8 +308,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             #messages {
                 padding: 10px;
-                /* Увеличиваем отступ снизу на мобильных */
-                margin-bottom: 70px;
             }
 
             #input-container {
@@ -411,4 +410,27 @@ document.addEventListener('DOMContentLoaded', () => {
             window.scrollTo(0, 0);
         }, 100);
     });
+
+    // Добавляем обработчики для лучшей работы с фокусом
+    const messageInput = document.getElementById('message-input');
+    const messagesContainer = document.getElementById('messages');
+
+    // Предотвращаем автоматический скролл при фокусе
+    messageInput.addEventListener('focus', (e) => {
+        e.preventDefault();
+        // Небольшая задержка, чтобы дать клавиатуре время появиться
+        setTimeout(() => {
+            messagesContainer.scrollTop = messagesContainer.scrollTop;
+        }, 100);
+    });
+
+    // Разрешаем скролл в контейнере сообщений
+    messagesContainer.addEventListener('touchmove', (e) => {
+        e.stopPropagation();
+    }, { passive: true });
+
+    // Предотвращаем скролл body
+    document.body.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+    }, { passive: false });
 }); 
