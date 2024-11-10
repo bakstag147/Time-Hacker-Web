@@ -4,7 +4,7 @@ let currentLevel = 1;
 let reputation = 50;
 
 // Менеджер контекста чата (тоже снаружи)
-class ChatContextManager {
+class ChatContext {
     constructor() {
         this.messages = [];
     }
@@ -13,17 +13,17 @@ class ChatContextManager {
         this.messages.push(message);
     }
 
+    getMessages() {
+        return this.messages;
+    }
+
     clearContext() {
         this.messages = [];
     }
-
-    getFormattedContext() {
-        return this.messages;
-    }
 }
 
-// Инициализируем контекст (снаружи)
-const chatContext = new ChatContextManager();
+// Создаем экземпляр контекста
+const chatContext = new ChatContext();
 
 // Системный промпт (снаружи)
 const systemBasePrompt = `ВАЖНЫЕ ПРАВИЛА ВЗАИМОДЕЙСТВИЯ:
@@ -196,7 +196,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// После констант и ChatContextManager добавляем все необходимые функции
+// После констант и ChatContext добавляем все необходимые функции
 
 async function fetchLevel(levelNumber) {
     try {
@@ -253,6 +253,16 @@ function addReputationChangeMessage(change) {
 async function initGame() {
     try {
         const level = await fetchLevel(currentLevel);
+        
+        // Очищаем контекст чата
+        chatContext.clearContext();
+        
+        // Добавляем системное сообщение
+        chatContext.addMessage({
+            role: 'system',
+            content: systemBasePrompt + '\n\n' + level.systemPrompt
+        });
+
         console.log('Level data type:', typeof level);
         console.log('Level data keys:', Object.keys(level));
         
@@ -274,13 +284,6 @@ async function initGame() {
         addStatusMessage(level.description);
         addStatusMessage(level.sceneDescription);
         addAIMessage(level.initialMessage);
-        
-        // Обновляем контекст чата
-        chatContext.clearContext();
-        chatContext.addMessage({
-            role: 'system',
-            content: systemBasePrompt + '\n\n' + level.systemPrompt
-        });
 
     } catch (error) {
         console.error('Error in initGame:', error);
