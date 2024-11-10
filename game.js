@@ -200,7 +200,7 @@ document.head.appendChild(style);
 
 async function fetchLevel(levelNumber) {
     try {
-        const response = await fetch(`${API_URL}/levels`, {  // Убираем /${levelNumber} из URL
+        const response = await fetch(`${API_URL}/levels`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -212,9 +212,17 @@ async function fetchLevel(levelNumber) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        const data = await response.json();
-        console.log('Level data received:', data);
-        return data;
+        const rawData = await response.text(); // Сначала получаем текст
+        console.log('Raw response:', rawData);
+        
+        try {
+            const data = JSON.parse(rawData); // Затем парсим его
+            console.log('Parsed level data:', data);
+            return data;
+        } catch (parseError) {
+            console.error('Error parsing JSON:', parseError);
+            throw new Error('Invalid JSON response');
+        }
     } catch (error) {
         console.error('Error fetching level:', error);
         throw error;
@@ -247,26 +255,29 @@ function addReputationChangeMessage(change) {
 async function initGame() {
     try {
         const level = await fetchLevel(currentLevel);
-        console.log('Received level data:', level);
+        console.log('Level data type:', typeof level);
+        console.log('Level data keys:', Object.keys(level));
         
-        // Проверяем, что получили правильные данные
-        if (!level || !level.number || !level.title) {
-            throw new Error('Invalid level data received');
+        // Проверяем структуру данных
+        if (!level || typeof level !== 'object') {
+            throw new Error('Invalid level data structure');
         }
 
+        // Обновляем заголовок уровня
+        const levelTitle = `Уровень ${level.number}: ${level.title}`;
+        console.log('Setting level title:', levelTitle);
+        
         // Очищаем предыдущие сообщения
         const messagesDiv = document.getElementById('messages');
-        if (messagesDiv) {
-            messagesDiv.innerHTML = '';
-        }
-
-        // Добавляем сообщения уровня
-        addStatusMessage(`Уровень ${level.number}: ${level.title}`, 'level-title');
+        messagesDiv.innerHTML = '';
+        
+        // Добавляем сообщения
+        addStatusMessage(levelTitle, 'level-title');
         addStatusMessage(level.description);
         addStatusMessage(level.sceneDescription);
         addAIMessage(level.initialMessage);
         
-        // Инициализируем контекст чата
+        // Обновляем контекст чата
         chatContext.clearContext();
         chatContext.addMessage({
             role: 'system',
@@ -274,9 +285,31 @@ async function initGame() {
         });
 
     } catch (error) {
-        console.error('Error initializing game:', error);
-        addStatusMessage('Ошибка загрузки уровня: ' + error.message);
+        console.error('Error in initGame:', error);
+        addStatusMessage('Ошибка инициализации: ' + error.message);
     }
+}
+
+// Обновим функцию addStatusMessage для лучшей обработки ошибок
+function addStatusMessage(text, type = 'default') {
+    if (!text) {
+        console.warn('Empty message text');
+        return;
+    }
+    
+    const messagesDiv = document.getElementById('messages');
+    if (!messagesDiv) {
+        console.error('Messages container not found');
+        return;
+    }
+    
+    console.log('Adding message:', { text, type });
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message status ${type}`;
+    messageDiv.textContent = text;
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
 
