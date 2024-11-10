@@ -345,49 +345,49 @@ function addStatusMessage(text, type = 'default') {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-async function sendToAI(userMessage) {
+async function sendToAI(message) {
     try {
-        console.log('🤖 Sending message to AI...');
+        // Получаем текущий уровень
+        const level = await fetchLevel(currentLevel);
         
+        // Проверяем наличие победных условий
+        if (!level || !level.victoryConditions) {
+            throw new Error('Invalid level data: missing victory conditions');
+        }
+
         // Добавляем сообщение пользователя в контекст
         chatContext.addMessage({
             role: 'user',
-            content: userMessage
+            content: message
         });
 
-        const response = await fetch(`${API_URL}/game/message`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Origin': 'https://bakstag147.github.io'
-            },
-            body: JSON.stringify({
-                messages: chatContext.getFormattedContext()
-            })
-        });
-
-        const data = await response.json();
-        console.log('📦 Response:', data);
-
-        // Извлекаем репутацию из ответа
-        const reputationMatch = data.content.match(/\*REPUTATION:(\d+)\*/);
-        if (reputationMatch) {
-            const newReputation = parseInt(reputationMatch[1]);
-            updateReputation(newReputation);
-        }
-
-        // Очищаем ответ от метки репутации
-        const cleanResponse = data.content.replace(/\*REPUTATION:\d+\*/, '').trim();
+        // Получаем ответ от AI
+        const aiResponse = await getAIResponse(message);
+        
+        // Проверяем условия победы
+        const victory = level.victoryConditions.some(condition => 
+            aiResponse.toLowerCase().includes(condition.toLowerCase())
+        );
 
         // Добавляем ответ AI в контекст
         chatContext.addMessage({
             role: 'assistant',
-            content: cleanResponse
+            content: aiResponse
         });
 
-        return cleanResponse;
+        // Отображаем ответ
+        addAIMessage(aiResponse);
+
+        // Если достигнуто условие победы
+        if (victory) {
+            addStatusMessage(level.victoryMessage, 'victory');
+            // Дополнительная логика победы...
+        }
+
+        return aiResponse;
     } catch (error) {
-        console.error('❌ Error:', error);
+        console.error('Error in sendToAI:', error);
+        addStatusMessage('Ошибка: ' + error.message);
         throw error;
     }
 }
