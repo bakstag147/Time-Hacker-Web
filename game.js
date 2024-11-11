@@ -439,7 +439,10 @@ async function getAIResponse(message) {
 
         const responseData = await response.json();
         console.log('Ответ от API:', responseData);
-        return responseData.content;
+        
+        // Извлекаем content из body.content
+        const content = JSON.parse(responseData.body).content;
+        return content;
 
     } catch (error) {
         console.error('Error getting AI response:', error);
