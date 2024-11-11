@@ -368,9 +368,9 @@ async function sendToAI(message) {
             const newReputation = parseInt(reputationMatch[1]);
             const reputationElement = document.querySelector('#reputation');
             if (reputationElement) {
-                const oldReputation = parseInt(reputationElement.textContent.match(/\d+/) || 0);
-                // Обновляем значение репутации (просто текст)
-                reputationElement.textContent = `Репутация: ${newReputation}`;
+                const oldReputation = parseInt(reputationElement.textContent || 0);
+                // Обновляем только число
+                reputationElement.textContent = newReputation;
                 
                 // Показываем изменение
                 const change = newReputation - oldReputation;
