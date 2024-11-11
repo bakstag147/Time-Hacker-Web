@@ -254,6 +254,7 @@ function addReputationChangeMessage(change) {
 async function initGame() {
     try {
         const level = await fetchLevel(currentLevel);
+        console.log('Loaded level:', level); // Для отладки
         
         // Обновляем UI
         const levelInfo = document.querySelector('#level-info span:first-child');
@@ -279,18 +280,22 @@ async function initGame() {
             content: systemBasePrompt
         });
 
-        // Добавляем все начальные сообщения уровня
+        // Добавляем название уровня как статусное сообщение
+        if (level.title) {
+            addStatusMessage(level.title);
+        }
+
+        // Добавляем описание как статусное сообщение
+        if (level.description) {
+            addStatusMessage(level.description);
+        }
+
+        // Добавляем начальное сообщение NPC
         if (level.initialMessage) {
-            const messages = Array.isArray(level.initialMessage) 
-                ? level.initialMessage 
-                : [level.initialMessage];
-                
-            messages.forEach(message => {
-                addAIMessage(message);
-                chatContext.addMessage({
-                    role: 'assistant',
-                    content: message
-                });
+            addAIMessage(level.initialMessage);
+            chatContext.addMessage({
+                role: 'assistant',
+                content: level.initialMessage
             });
         }
     } catch (error) {
