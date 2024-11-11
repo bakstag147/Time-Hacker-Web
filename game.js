@@ -363,8 +363,6 @@ function addStatusMessage(text, type = 'default') {
 
 async function sendToAI(message) {
     try {
-        const level = await fetchLevel(currentLevel);
-        
         chatContext.addMessage({
             role: 'user',
             content: message
@@ -372,10 +370,6 @@ async function sendToAI(message) {
 
         const aiResponse = await getAIResponse(message);
         
-        if (!aiResponse) {
-            throw new Error('Пустой ответ от AI');
-        }
-
         // Обрабатываем репутацию
         const reputationMatch = aiResponse.match(/\*REPUTATION:(\d+)\*/);
         if (reputationMatch) {
@@ -403,13 +397,6 @@ async function sendToAI(message) {
 
         // Отображаем очищенное сообщение
         addAIMessage(cleanResponse);
-
-        // Проверяем условия победы
-        if (level?.victoryConditions?.some(condition => 
-            aiResponse.toLowerCase().includes(condition.toLowerCase())
-        )) {
-            addStatusMessage(level.victoryMessage || 'Уровень пройден!', 'victory');
-        }
 
         return cleanResponse;
     } catch (error) {
