@@ -273,13 +273,30 @@ async function initGame() {
         // Очищаем контекст чата
         chatContext.clearContext();
         
-        // Добавляем системный промпт
+        // Добавляем полный системный промпт с контекстом уровня
+        const fullSystemPrompt = `${systemBasePrompt}
+
+КОНТЕКСТ УРОВНЯ:
+${level.systemPrompt || ''}
+
+РОЛЬ:
+${level.title || ''}
+
+ОПИСАНИЕ:
+${level.description || ''}
+
+СЦЕНА:
+${level.sceneDescription || ''}
+
+УСЛОВИЯ ПОБЕДЫ:
+${level.victoryConditions ? level.victoryConditions.join('\n') : ''}`;
+
         chatContext.addMessage({
             role: 'system',
-            content: systemBasePrompt
+            content: fullSystemPrompt
         });
 
-        // Показываем название уровня как статусное сообщение
+        // Показываем название уровня
         if (level.title) {
             addStatusMessage(level.title);
         }
@@ -297,7 +314,6 @@ async function initGame() {
         addStatusMessage('Ошибка инициализации: ' + error.message);
     }
 }
-
 // Обновим функцию addStatusMessage для лучшей обработки ошибок
 function addStatusMessage(text, type = 'default') {
     if (!text) {
