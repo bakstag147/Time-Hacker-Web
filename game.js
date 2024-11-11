@@ -418,6 +418,9 @@ function updateReputation(change) {
 
 async function getAIResponse(message) {
     try {
+        console.log('Отправляем сообщение:', message);
+        console.log('Контекст чата:', chatContext.getMessages());
+        
         const response = await fetch(`${API_URL}/game/message`, {
             method: 'POST',
             headers: {
@@ -433,7 +436,7 @@ async function getAIResponse(message) {
         }
 
         const responseData = await response.json();
-        // Судя по логам, content находится прямо в responseData
+        console.log('Ответ от API:', responseData);
         return responseData.content;
 
     } catch (error) {
