@@ -335,7 +335,29 @@ function addStatusMessage(text, type = 'default') {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-
+function addVictoryMessage(message) {
+    const messagesContainer = document.getElementById('messages');
+    const victoryDiv = document.createElement('div');
+    victoryDiv.className = 'message victory';
+    
+    // Добавляем сообщение о победе
+    const messageText = document.createElement('p');
+    messageText.textContent = message;
+    victoryDiv.appendChild(messageText);
+    
+    // Добавляем кнопку "Следующий уровень"
+    const nextLevelButton = document.createElement('button');
+    nextLevelButton.textContent = 'Следующий уровень';
+    nextLevelButton.className = 'next-level-button';
+    nextLevelButton.onclick = async () => {
+        currentLevel++;
+        await initGame();
+    };
+    victoryDiv.appendChild(nextLevelButton);
+    
+    messagesContainer.appendChild(victoryDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
 
 function addUserMessage(text) {
     const messagesDiv = document.getElementById('messages');
@@ -414,14 +436,7 @@ async function sendToAI(message) {
                 cleanResponse.includes(condition)
             )) {
             // Показываем сообщение о победе
-            addStatusMessage(level.victoryMessage || 'Уровень пройден!', 'victory');
-            
-            // Небольшая пауза перед переходом
-            setTimeout(async () => {
-                currentLevel++;
-                // Начинаем следующий уровень
-                await initGame();
-            }, 2000);
+            addVictoryMessage(level.victoryMessage || 'Уровень пройден!');
         }
 
         return cleanResponse;
