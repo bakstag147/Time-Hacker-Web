@@ -255,21 +255,20 @@ async function initGame() {
     try {
         const level = await fetchLevel(currentLevel);
         
-        // Обновляем UI - уровень находится в первом span внутри level-info
+        // Обновляем UI
         const levelInfo = document.querySelector('#level-info span:first-child');
         const reputationSpan = document.querySelector('#reputation');
         const messagesContainer = document.getElementById('messages');
 
-        if (!levelInfo || !reputationSpan || !messagesContainer) {
-            throw new Error('Не найдены необходимые элементы интерфейса');
+        if (levelInfo) {
+            levelInfo.textContent = `Уровень ${currentLevel}`;
         }
-
-        // Обновляем UI
-        levelInfo.textContent = `Уровень ${currentLevel}`;
-        reputationSpan.textContent = '50';  // Устанавливаем только число
-        
-        // Очищаем предыдущие сообщения
-        messagesContainer.innerHTML = '';
+        if (reputationSpan) {
+            reputationSpan.textContent = '50';
+        }
+        if (messagesContainer) {
+            messagesContainer.innerHTML = '';
+        }
         
         // Очищаем контекст чата
         chatContext.clearContext();
@@ -280,12 +279,18 @@ async function initGame() {
             content: systemBasePrompt
         });
 
-        // Добавляем начальное сообщение уровня, если оно есть
+        // Добавляем все начальные сообщения уровня
         if (level.initialMessage) {
-            addAIMessage(level.initialMessage);
-            chatContext.addMessage({
-                role: 'assistant',
-                content: level.initialMessage
+            const messages = Array.isArray(level.initialMessage) 
+                ? level.initialMessage 
+                : [level.initialMessage];
+                
+            messages.forEach(message => {
+                addAIMessage(message);
+                chatContext.addMessage({
+                    role: 'assistant',
+                    content: message
+                });
             });
         }
     } catch (error) {
