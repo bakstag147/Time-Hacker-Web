@@ -369,11 +369,9 @@ async function sendToAI(message) {
         });
 
         const aiResponse = await getAIResponse(message);
-        console.log('Ответ AI перед обработкой:', aiResponse);
         
         // Обрабатываем репутацию
         const reputationMatch = aiResponse.match(/\*REPUTATION:(\d+)\*/);
-        console.log('Найдено совпадение репутации:', reputationMatch);
         if (reputationMatch) {
             const newReputation = parseInt(reputationMatch[1]);
             const reputationElement = document.querySelector('#reputation');
@@ -399,6 +397,16 @@ async function sendToAI(message) {
 
         // Отображаем очищенное сообщение
         addAIMessage(cleanResponse);
+
+        // Проверяем условия победы
+        const level = await fetchLevel(currentLevel);
+        if (level.victoryConditions && 
+            level.victoryConditions.some(condition => 
+                cleanResponse.toLowerCase().includes(condition.toLowerCase())
+            )) {
+            addStatusMessage(level.victoryMessage || 'Уровень пройден!', 'victory');
+            // Можно добавить дополнительную логику при победе
+        }
 
         return cleanResponse;
     } catch (error) {
