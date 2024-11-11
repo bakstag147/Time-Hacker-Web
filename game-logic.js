@@ -1,14 +1,15 @@
-import { systemBasePrompt } from './gpt-instructions.js';
-
 const API_URL = 'https://gg40e4wjm2.execute-api.eu-north-1.amazonaws.com/prod';
 let currentLevel = 1;
 let reputation = 50;
+let cachedInstruct = null;
+let chatContext;
 
 class ChatContext {
-    constructor() {
+    constructor(systemBasePrompt) {
+        this.systemBasePrompt = systemBasePrompt;
         this.messages = [{
             role: 'system',
-            content: systemBasePrompt
+            content: this.systemBasePrompt
         }];
     }
 
@@ -23,12 +24,21 @@ class ChatContext {
     clearContext() {
         this.messages = [{
             role: 'system',
-            content: systemBasePrompt
+            content: this.systemBasePrompt
         }];
     }
 }
 
-const chatContext = new ChatContext();
+async function initializeChatContext() {
+    try {
+        const systemBasePrompt = await getGeneralInstruct();
+        chatContext = new ChatContext(systemBasePrompt);
+        return chatContext;
+    } catch (error) {
+        console.error('Failed to initialize chat context:', error);
+        throw error;
+    }
+}
 
 async function fetchLevel(levelNumber) {
     try {
@@ -55,8 +65,33 @@ async function fetchLevel(levelNumber) {
     }
 }
 
+async function getGeneralInstruct() {
+    try {
+        if (cachedInstruct) {
+            console.log('Using cached instruct:', cachedInstruct);
+            return cachedInstruct;
+        }
+
+        const response = await fetch(`${API_URL}/getGeneralInstruct`);
+        const text = await response.text();
+        console.log('Received general instruct:', text);
+        
+        if (!text) {
+            throw new Error('Empty response from API');
+        }
+
+        cachedInstruct = text;
+        return text;
+    } catch (error) {
+        console.error('Error fetching general instructions:', error);
+        throw error;
+    }
+}
+
 async function getAIResponse(message) {
     try {
+        console.log('Sending messages to AI:', chatContext.getMessages());
+
         const response = await fetch(`${API_URL}/game/message`, {
             method: 'POST',
             headers: {
@@ -73,6 +108,7 @@ async function getAIResponse(message) {
 
         const responseData = await response.json();
         const content = JSON.parse(responseData.body).content;
+        console.log('Received AI response:', content);
         return content;
 
     } catch (error) {
@@ -86,5 +122,7 @@ export {
     reputation, 
     chatContext, 
     fetchLevel, 
-    getAIResponse 
+    getAIResponse,
+    getGeneralInstruct,
+    initializeChatContext
 };

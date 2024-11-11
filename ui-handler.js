@@ -3,7 +3,8 @@ import {
     reputation, 
     chatContext, 
     fetchLevel, 
-    getAIResponse 
+    getAIResponse,
+    initializeChatContext
 } from './game-logic.js';
 
 function updateReputation(newValue) {
@@ -133,7 +134,11 @@ async function sendToAI(message) {
 
 async function initGame() {
     try {
+        await initializeChatContext();
+        console.log('Chat context initialized:', chatContext.getMessages());
+        
         const level = await fetchLevel(currentLevel);
+        console.log('Level data received:', level);
         
         const levelInfo = document.querySelector('#level-info span:first-child');
         const reputationSpan = document.querySelector('#reputation');
@@ -150,6 +155,7 @@ async function initGame() {
         }
         
         chatContext.clearContext();
+        console.log('After clear context:', chatContext.getMessages());
         
         if (level.title) {
             addStatusMessage(level.title);
@@ -163,6 +169,7 @@ async function initGame() {
                 role: 'assistant',
                 content: level.initialMessage
             });
+            console.log('After adding initial message:', chatContext.getMessages());
         }
     } catch (error) {
         console.error('Error initializing game:', error);
