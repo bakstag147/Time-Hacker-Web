@@ -6,7 +6,10 @@ let reputation = 50;
 
 class ChatContext {
     constructor() {
-        this.messages = [];
+        this.messages = [{
+            role: 'system',
+            content: systemBasePrompt
+        }];
     }
 
     addMessage(message) {
@@ -18,7 +21,10 @@ class ChatContext {
     }
 
     clearContext() {
-        this.messages = [];
+        this.messages = [{
+            role: 'system',
+            content: systemBasePrompt
+        }];
     }
 }
 
