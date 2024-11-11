@@ -297,7 +297,9 @@ ${level.victoryConditions ? level.victoryConditions.join('\n') : ''}`;
         if (level.title) {
             addStatusMessage(level.title);
         }
-
+        if (level.description) {
+            addStatusMessage(level.description);
+        }
         // Добавляем начальное сообщение уровня
         if (level.initialMessage) {
             addAIMessage(level.initialMessage);
