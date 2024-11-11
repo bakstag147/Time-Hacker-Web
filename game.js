@@ -398,14 +398,14 @@ async function sendToAI(message) {
         // Отображаем очищенное сообщение
         addAIMessage(cleanResponse);
 
-        // Проверяем условия победы
+        // Проверяем условия победы (как в мобильной версии)
         const level = await fetchLevel(currentLevel);
         if (level.victoryConditions && 
             level.victoryConditions.some(condition => 
-                cleanResponse.toLowerCase().includes(condition.toLowerCase())
+                cleanResponse.includes(condition)  // Убрали .toLowerCase()
             )) {
             addStatusMessage(level.victoryMessage || 'Уровень пройден!', 'victory');
-            // Можно добавить дополнительную логику при победе
+            // TODO: Добавить логику перехода на следующий уровень
         }
 
         return cleanResponse;
