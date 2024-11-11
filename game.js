@@ -444,9 +444,8 @@ async function getAIResponse(message) {
         }
 
         const responseData = await response.json();
-        const data = JSON.parse(responseData.body);
-        
-        return data.content;
+        // responseData.body уже является объектом, не нужно парсить
+        return responseData.body.content;
 
     } catch (error) {
         console.error('Error getting AI response:', error);
