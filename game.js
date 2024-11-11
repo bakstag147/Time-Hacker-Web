@@ -253,8 +253,7 @@ function addReputationChangeMessage(change) {
 
 async function initGame() {
     try {
-        const levelData = await fetchLevel(currentLevel);
-        console.log('Initializing game with level data:', levelData);
+        const level = await fetchLevel(currentLevel);
         
         // Обновляем UI
         const levelInfo = document.querySelector('#level-info span:first-child');
@@ -280,20 +279,17 @@ async function initGame() {
             content: systemBasePrompt
         });
 
-        // Добавляем контекст уровня как системное сообщение
-        if (levelData.systemPrompt) {
-            chatContext.addMessage({
-                role: 'system',
-                content: levelData.systemPrompt
-            });
+        // Показываем название уровня как статусное сообщение
+        if (level.title) {
+            addStatusMessage(level.title);
         }
 
         // Добавляем начальное сообщение уровня
-        if (levelData.initialMessage) {
-            addAIMessage(levelData.initialMessage);
+        if (level.initialMessage) {
+            addAIMessage(level.initialMessage);
             chatContext.addMessage({
                 role: 'assistant',
-                content: levelData.initialMessage
+                content: level.initialMessage
             });
         }
     } catch (error) {
@@ -396,14 +392,21 @@ async function sendToAI(message) {
         // Отображаем очищенное сообщение
         addAIMessage(cleanResponse);
 
-        // Проверяем условия победы (как в мобильной версии)
+        // Проверяем условия победы
         const level = await fetchLevel(currentLevel);
         if (level.victoryConditions && 
             level.victoryConditions.some(condition => 
-                cleanResponse.includes(condition)  // Убрали .toLowerCase()
+                cleanResponse.includes(condition)
             )) {
+            // Показываем сообщение о победе
             addStatusMessage(level.victoryMessage || 'Уровень пройден!', 'victory');
-            // TODO: Добавить логику перехода на следующий уровень
+            
+            // Небольшая пауза перед переходом
+            setTimeout(async () => {
+                currentLevel++;
+                // Начинаем следующий уровень
+                await initGame();
+            }, 2000);
         }
 
         return cleanResponse;
