@@ -276,11 +276,8 @@ async function initGame() {
         // Добавляем полный системный промпт с контекстом уровня
         const fullSystemPrompt = `${systemBasePrompt}
 
-КОНТЕКСТ УРОВНЯ:
+ТВОЯ РОЛЬ:
 ${level.systemPrompt || ''}
-
-РОЛЬ:
-${level.title || ''}
 
 ОПИСАНИЕ:
 ${level.description || ''}
