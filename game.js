@@ -372,6 +372,10 @@ async function sendToAI(message) {
 
         const aiResponse = await getAIResponse(message);
         
+        if (!aiResponse) {
+            throw new Error('Пустой ответ от AI');
+        }
+
         // Обрабатываем репутацию
         const reputationMatch = aiResponse.match(/\*REPUTATION:(\d+)\*/);
         if (reputationMatch) {
@@ -379,10 +383,8 @@ async function sendToAI(message) {
             const reputationElement = document.querySelector('#reputation');
             if (reputationElement) {
                 const oldReputation = parseInt(reputationElement.textContent || 0);
-                // Обновляем только число
                 reputationElement.textContent = newReputation;
                 
-                // Показываем изменение
                 const change = newReputation - oldReputation;
                 if (change !== 0) {
                     addReputationChangeMessage(change);
