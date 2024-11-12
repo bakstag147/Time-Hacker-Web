@@ -30,6 +30,7 @@ function addReputationChangeMessage(change) {
 }
 
 function addUserMessage(text) {
+    console.log('👤 Adding user message to UI:', text);
     const messagesDiv = document.getElementById('messages');
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message user-message';
@@ -39,6 +40,7 @@ function addUserMessage(text) {
 }
 
 function addAIMessage(text) {
+    console.log('🤖 Adding AI message to UI:', text);
     const messagesDiv = document.getElementById('messages');
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message ai-message';
@@ -48,9 +50,10 @@ function addAIMessage(text) {
 }
 
 function addStatusMessage(text, type = 'default') {
+    console.log('ℹ️ Adding status message:', text, 'type:', type);
     const messagesDiv = document.getElementById('messages');
     if (!messagesDiv) {
-        console.error('Messages container not found!');
+        console.error('❌ Messages container not found!');
         return;
     }
 
@@ -85,16 +88,20 @@ function addVictoryMessage(message) {
 
 async function sendToAI(message) {
     try {
+        console.log('📤 User message:', message);
         chatContext.addMessage({
             role: 'user',
             content: message
         });
+        console.log('💬 Context after user message:', chatContext.getMessages());
 
         const aiResponse = await getAIResponse(message);
+        console.log('📥 Raw AI response:', aiResponse);
         
-        const reputationMatch = aiResponse.match(/\*REPUTATION:(\d+)\*/);
+        const reputationMatch = aiResponse.match(/\*REPUTATION:(-?\d+)\*/);
         if (reputationMatch) {
             const newReputation = parseInt(reputationMatch[1]);
+            console.log('📊 New reputation value:', newReputation);
             const reputationElement = document.querySelector('#reputation');
             if (reputationElement) {
                 const oldReputation = parseInt(reputationElement.textContent || 0);
@@ -102,17 +109,22 @@ async function sendToAI(message) {
                 
                 const change = newReputation - oldReputation;
                 if (change !== 0) {
+                    console.log('📊 Reputation change:', change);
                     addReputationChangeMessage(change);
                 }
             }
+        } else {
+            console.warn('⚠️ No reputation change found in AI response');
         }
 
-        const cleanResponse = aiResponse.replace(/\*REPUTATION:\d+\*/, '').trim();
+        const cleanResponse = aiResponse.replace(/\*REPUTATION:-?\d+\*/, '').trim();
+        console.log('🧹 Cleaned AI response:', cleanResponse);
         
         chatContext.addMessage({
             role: 'assistant',
             content: aiResponse
         });
+        console.log('💬 Context after AI response:', chatContext.getMessages());
 
         addAIMessage(cleanResponse);
 
@@ -121,12 +133,13 @@ async function sendToAI(message) {
             level.victoryConditions.some(condition => 
                 cleanResponse.includes(condition)
             )) {
+            console.log('🎉 Victory condition met!');
             addVictoryMessage(level.victoryMessage || 'Уровень пройден!');
         }
 
         return cleanResponse;
     } catch (error) {
-        console.error('Error in sendToAI:', error);
+        console.error('❌ Error in sendToAI:', error);
         addStatusMessage('Ошибка: ' + error.message);
         throw error;
     }
@@ -134,16 +147,18 @@ async function sendToAI(message) {
 
 async function initGame() {
     try {
+        console.log('🎮 Initializing game...');
         await initializeChatContext();
-        console.log('Chat context initialized:', chatContext.getMessages());
+        console.log('💬 Chat context initialized:', chatContext.getMessages());
         
         const level = await fetchLevel(currentLevel);
-        console.log('Level data received:', level);
+        console.log('🎯 Level data received:', level);
         
         const levelInfo = document.querySelector('#level-info span:first-child');
         const reputationSpan = document.querySelector('#reputation');
         const messagesContainer = document.getElementById('messages');
 
+        console.log('🔄 Updating UI elements...');
         if (levelInfo) {
             levelInfo.textContent = `Уровень ${currentLevel}`;
         }
@@ -155,24 +170,27 @@ async function initGame() {
         }
         
         chatContext.clearContext();
-        console.log('After clear context:', chatContext.getMessages());
+        console.log('🧹 After clear context:', chatContext.getMessages());
         
         if (level.title) {
+            console.log('📝 Adding title:', level.title);
             addStatusMessage(level.title);
         }
         if (level.description) {
+            console.log('📝 Adding description:', level.description);
             addStatusMessage(level.description);
         }
         if (level.initialMessage) {
+            console.log('📝 Adding initial message:', level.initialMessage);
             addAIMessage(level.initialMessage);
             chatContext.addMessage({
                 role: 'assistant',
                 content: level.initialMessage
             });
-            console.log('After adding initial message:', chatContext.getMessages());
+            console.log('💬 Messages after adding initial:', chatContext.getMessages());
         }
     } catch (error) {
-        console.error('Error initializing game:', error);
+        console.error('❌ Error initializing game:', error);
         addStatusMessage('Ошибка инициализации: ' + error.message);
     }
 }

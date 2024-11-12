@@ -42,6 +42,7 @@ async function initializeChatContext() {
 
 async function fetchLevel(levelNumber) {
     try {
+        console.log(`📡 Fetching level ${levelNumber}...`);
         const response = await fetch(`${API_URL}/levels`, {
             method: 'POST',
             headers: {
@@ -57,10 +58,11 @@ async function fetchLevel(levelNumber) {
         
         const responseData = await response.json();
         const levelData = JSON.parse(responseData.body);
+        console.log('📥 Received level data:', levelData);
         return levelData;
         
     } catch (error) {
-        console.error('Error fetching level:', error);
+        console.error('❌ Error fetching level:', error);
         throw error;
     }
 }
@@ -68,13 +70,14 @@ async function fetchLevel(levelNumber) {
 async function getGeneralInstruct() {
     try {
         if (cachedInstruct) {
-            console.log('Using cached instruct:', cachedInstruct);
+            console.log('🔄 Using cached instruct:', cachedInstruct);
             return cachedInstruct;
         }
 
+        console.log('📡 Fetching general instructions from API...');
         const response = await fetch(`${API_URL}/getGeneralInstruct`);
         const text = await response.text();
-        console.log('Received general instruct:', text);
+        console.log('📥 Received general instruct:', text);
         
         if (!text) {
             throw new Error('Empty response from API');
@@ -83,23 +86,22 @@ async function getGeneralInstruct() {
         cachedInstruct = text;
         return text;
     } catch (error) {
-        console.error('Error fetching general instructions:', error);
+        console.error('❌ Error fetching general instructions:', error);
         throw error;
     }
 }
 
 async function getAIResponse(message) {
     try {
-        console.log('Sending messages to AI:', chatContext.getMessages());
+        const messages = chatContext.getMessages();
+        console.log('📤 Sending messages to AI:', messages);
 
         const response = await fetch(`${API_URL}/game/message`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                messages: chatContext.getMessages()
-            })
+            body: JSON.stringify({ messages })
         });
 
         if (!response.ok) {
@@ -108,11 +110,11 @@ async function getAIResponse(message) {
 
         const responseData = await response.json();
         const content = JSON.parse(responseData.body).content;
-        console.log('Received AI response:', content);
+        console.log('📥 Received AI response:', content);
         return content;
 
     } catch (error) {
-        console.error('Error getting AI response:', error);
+        console.error('❌ Error getting AI response:', error);
         throw error;
     }
 }
